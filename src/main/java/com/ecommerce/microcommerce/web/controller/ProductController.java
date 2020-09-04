@@ -17,7 +17,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @Api( description="API pour es opérations CRUD sur les produits.")
@@ -72,11 +74,8 @@ public class ProductController {
 
         Product productAdded =  productDao.save(product);
 
-        if (productAdded == null) {
-            return ResponseEntity.noContent().build();
-        }else if(productAdded.getPrix()==0){
-            throw new ProduitGratuitException("Le produit avec l'id " + id + " est Gratuit.");
-        }
+        if (productAdded == null) return ResponseEntity.noContent().build();
+        if(productAdded.getPrix()==0) throw new ProduitGratuitException("Le produit avec l'id " + productAdded.getId() + " est Gratuit.");
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -101,8 +100,16 @@ public class ProductController {
 
     //Chercher la marge pour tout les produits
     @GetMapping (value = "/AdminProduits")
-    public Iterable<Product> testeDeMargeProduit(){
-        return productDao.calculerMargeProduit();
+    public Map<Product, Integer> testeDeMargeProduit(){
+
+        Iterable<Product> produits = productDao.findAll();
+
+        Map<Product, Integer> productsMargin = new HashMap<>();
+        produits.forEach(e->{
+                    productsMargin.put(e, e.getPrix()-e.getPrixAchat());
+                });
+        return (productsMargin);
+
     }
 
     //Trier par ordre alphabétique
