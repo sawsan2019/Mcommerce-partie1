@@ -95,6 +95,17 @@ public class ProductController {
         productDao.save(product);
     }
 
+    //Chercher la marge pour tout les produits
+    @GetMapping (value = "/AdminProduits")
+    public Iterable<Product> testeDeMargeProduit(){
+        return productDao.calculerMargeProduit();
+    }
+
+    //Trier par ordre alphabétique
+    @GetMapping(value = "/TrierProduits")
+    public List<Product> trierProduitsParOrdreAlphabetique(){
+        return productDao.findByOrderByNomAsc();
+    }
 
     //Pour les tests
     @GetMapping(value = "test/produits/{prix}")
@@ -102,7 +113,5 @@ public class ProductController {
 
         return productDao.chercherUnProduitCher(400);
     }
-
-
 
 }
